@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.ome.converter.ui.controller.MainDashboardController"
+      spacing="0.0" stylesheets="@../styles/theme.css" styleClass="app-window">
+
+    <!-- Top Application Bar -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="12.0">
+        <padding>
+            <Insets top="12" right="24" bottom="12" left="24"/>
+        </padding>
+        <Label text="VSI Studio" styleClass="app-brand-title"/>
+        <Label text="PRO" styleClass="app-brand-badge"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="📁 Open Output Directory" onAction="#handleOpenOutputFolder" styleClass="top-bar-btn"/>
+    </HBox>
+
+    <!-- Main Workspace (Split View) -->
+    <HBox VBox.vgrow="ALWAYS" spacing="16.0" styleClass="workspace-container">
+        <padding>
+            <Insets top="16" right="20" bottom="16" left="20"/>
+        </padding>
+
+        <!-- Left Column: Settings & Configuration -->
+        <VBox prefWidth="420" minWidth="380" spacing="16.0">
+
+            <!-- File Selection Card -->
+            <VBox styleClass="card-panel" spacing="12.0">
+                <Label text="File &amp; Destination Setup" styleClass="card-header-title"/>
+
+                <!-- Source File Picker -->
+                <VBox spacing="6.0">
+                    <Label text="Source Slide (.vsi):" styleClass="input-label"/>
+                    <HBox spacing="8.0">
+                        <TextField fx:id="txtSourceFile" promptText="Choose a .vsi microscopic slide file..." HBox.hgrow="ALWAYS" styleClass="input-field"/>
+                        <Button text="Browse" onAction="#handleBrowseSourceFile" styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Output Folder Picker -->
+                <VBox spacing="6.0">
+                    <Label text="Output Folder:" styleClass="input-label"/>
+                    <HBox spacing="8.0">
+                        <TextField fx:id="txtTargetDestination" promptText="Choose destination directory..." HBox.hgrow="ALWAYS" styleClass="input-field"/>
+                        <Button text="Select" onAction="#handleBrowseTargetDestination" styleClass="btn-secondary"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- Conversion Settings Card -->
+            <VBox styleClass="card-panel" spacing="12.0">
+                <Label text="Options" styleClass="card-header-title"/>
+                <VBox spacing="6.0">
+                    <Label text="Target OME-Zarr Format Spec:" styleClass="input-label"/>
+                    <ComboBox fx:id="cmbTargetVersion" maxWidth="1.7976931348623157E308" styleClass="input-field"/>
+                </VBox>
+                <CheckBox fx:id="chkVendorMetadata" text="Preserve original microscope hardware tags" selected="true" styleClass="custom-checkbox"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Action Controls Card -->
+            <VBox styleClass="card-panel" spacing="12.0">
+                <HBox spacing="10.0">
+                    <Button fx:id="btnConvert" text="Start Conversion" onAction="#handleStartConversion" HBox.hgrow="ALWAYS" maxWidth="1.7976931348623157E308" styleClass="btn-primary"/>
+                    <Button fx:id="btnCancel" text="Cancel" onAction="#handleCancelConversion" styleClass="btn-danger"/>
+                </HBox>
+            </VBox>
+        </VBox>
+
+        <!-- Right Column: Live Status & Logs -->
+        <VBox HBox.hgrow="ALWAYS" spacing="16.0">
+
+            <!-- Live Status & Progress Card -->
+            <VBox styleClass="card-panel" spacing="10.0">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Conversion Progress" styleClass="card-header-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblStatus" text="Ready" styleClass="status-indicator"/>
+                </HBox>
+                <ProgressBar fx:id="progressBar" progress="0.0" maxWidth="1.7976931348623157E308" styleClass="custom-progress-bar"/>
+            </VBox>
+
+            <!-- Console Log Card -->
+            <VBox styleClass="card-panel" VBox.vgrow="ALWAYS" spacing="8.0">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Execution Logs" styleClass="card-header-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Clear Logs" onAction="#handleClearLogs" styleClass="btn-text"/>
+                </HBox>
+                <ListView fx:id="lstLogs" VBox.vgrow="ALWAYS" styleClass="terminal-log-view"/>
+            </VBox>
+
+        </VBox>
+    </HBox>
+
+    <!-- Bottom Status Bar -->
+    <HBox styleClass="bottom-status-bar" alignment="CENTER_LEFT" spacing="12.0">
+        <padding>
+            <Insets top="6" right="20" bottom="6" left="20"/>
+        </padding>
+        <Label text="OME-NGFF v0.5 | Zarr v3 Core Storage Spec" styleClass="bottom-status-text"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Ready" styleClass="bottom-status-text"/>
+    </HBox>
+
+</VBox>

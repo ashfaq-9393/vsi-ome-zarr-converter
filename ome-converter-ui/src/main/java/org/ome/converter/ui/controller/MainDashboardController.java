@@ -1,11 +1,16 @@
 package org.ome.converter.ui.controller;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import org.ome.converter.core.model.GapAnalysisResult;
+import org.ome.converter.core.model.GapAnalysisResult.GapAnalysisItemDetail;
+import org.ome.converter.core.model.MetadataClassification;
 import org.ome.converter.ui.util.AlertHelper;
 import org.ome.converter.ui.viewmodel.MainDashboardViewModel;
 
@@ -26,7 +31,28 @@ public class MainDashboardController {
 
     @FXML private ListView<String> lstLogs;
 
+    // In-App Dashboard 4 KPI Count Cards (MAPPED, VENDOR DUMP, LOSSED, FIELD COUNTS)
+    @FXML private Label lblMappedCount;
+    @FXML private Label lblVendorDumpCount;
+    @FXML private Label lblLossedCount;
+    @FXML private Label lblTotalFieldCount;
+    @FXML private Label lblFieldCountsSub;
+
+    @FXML private ProgressBar progressMapped;
+    @FXML private ProgressBar progressVendorDump;
+    @FXML private ProgressBar progressLossed;
+
+    // Lossed Fields TableView & Search
+    @FXML private TextField txtSearchLostFields;
+    @FXML private TableView<GapAnalysisItemDetail> tblLostFields;
+    @FXML private TableColumn<GapAnalysisItemDetail, String> colLostStatus;
+    @FXML private TableColumn<GapAnalysisItemDetail, String> colLostKey;
+    @FXML private TableColumn<GapAnalysisItemDetail, String> colLostPath;
+    @FXML private TableColumn<GapAnalysisItemDetail, String> colLostValue;
+    @FXML private TableColumn<GapAnalysisItemDetail, String> colLostExplanation;
+
     private MainDashboardViewModel viewModel;
+    private FilteredList<GapAnalysisItemDetail> filteredFieldList;
 
     @FXML
     public void initialize() {
@@ -46,6 +72,49 @@ public class MainDashboardController {
         btnCancel.disableProperty().bind(viewModel.convertingProperty().not());
 
         lstLogs.setItems(viewModel.getLogMessages());
+
+        // In-App Dashboard KPI Count Bindings
+        lblMappedCount.textProperty().bind(viewModel.mappedCountTextProperty());
+        lblVendorDumpCount.textProperty().bind(viewModel.vendorDumpCountTextProperty());
+        lblLossedCount.textProperty().bind(viewModel.lossedCountTextProperty());
+        lblTotalFieldCount.textProperty().bind(viewModel.totalCountTextProperty());
+
+        progressMapped.progressProperty().bind(viewModel.mappedFractionProperty());
+        progressVendorDump.progressProperty().bind(viewModel.vendorDumpFractionProperty());
+        progressLossed.progressProperty().bind(viewModel.lossedFractionProperty());
+
+        // TableView Columns bound to LOSSED fields
+        colLostStatus.setCellValueFactory(cellData -> new SimpleStringProperty("LOSSED"));
+        colLostKey.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().originalKey()));
+        colLostPath.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().originalHierarchyPath()));
+        colLostValue.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().originalValue()));
+        colLostExplanation.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().explanation()));
+
+        filteredFieldList = new FilteredList<>(viewModel.getLossedFields(), p -> true);
+        tblLostFields.setItems(filteredFieldList);
+
+        if (txtSearchLostFields != null) {
+            txtSearchLostFields.textProperty().addListener((obs, oldVal, newVal) -> updateTablePredicate());
+        }
+        updateTablePredicate();
+    }
+
+    private void updateTablePredicate() {
+        if (filteredFieldList == null) return;
+
+        String searchText = txtSearchLostFields != null && txtSearchLostFields.getText() != null
+            ? txtSearchLostFields.getText().toLowerCase().trim()
+            : "";
+
+        filteredFieldList.setPredicate(item -> {
+            if (searchText.isEmpty()) {
+                return true;
+            }
+            return (item.originalKey() != null && item.originalKey().toLowerCase().contains(searchText))
+                || (item.originalHierarchyPath() != null && item.originalHierarchyPath().toLowerCase().contains(searchText))
+                || (item.originalValue() != null && item.originalValue().toLowerCase().contains(searchText))
+                || (item.explanation() != null && item.explanation().toLowerCase().contains(searchText));
+        });
     }
 
     @FXML
@@ -95,10 +164,8 @@ public class MainDashboardController {
         viewModel.startConversion(
             () -> {
                 String targetPath = txtTargetDestination.getText();
-                File srcFile = new File(txtSourceFile.getText());
-                String safeName = srcFile.getName().replaceAll("[^a-zA-Z0-9._-]", "_");
-                File htmlReportFile = new File(targetPath, safeName + "_gap_report.html");
-                AlertHelper.showCompletionSuccessWithReport("CONVERTED", targetPath, htmlReportFile);
+                AlertHelper.showCompletionSuccess("CONVERTED", targetPath);
+                updateTablePredicate();
             },
             (ex) -> {
                 if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("disk space")) {

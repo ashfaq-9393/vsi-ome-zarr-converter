@@ -26,7 +26,7 @@
         </padding>
 
         <!-- Left Column: Settings & Configuration -->
-        <VBox prefWidth="420" minWidth="380" spacing="16.0">
+        <VBox prefWidth="380" minWidth="340" spacing="16.0">
 
             <!-- File Selection Card -->
             <VBox styleClass="card-panel" spacing="12.0">
@@ -72,7 +72,7 @@
             </VBox>
         </VBox>
 
-        <!-- Right Column: Live Status & Logs -->
+        <!-- Right Column: Dashboard Workspace Tabs -->
         <VBox HBox.hgrow="ALWAYS" spacing="16.0">
 
             <!-- Live Status & Progress Card -->
@@ -85,15 +85,93 @@
                 <ProgressBar fx:id="progressBar" progress="0.0" maxWidth="1.7976931348623157E308" styleClass="custom-progress-bar"/>
             </VBox>
 
-            <!-- Console Log Card -->
-            <VBox styleClass="card-panel" VBox.vgrow="ALWAYS" spacing="8.0">
-                <HBox alignment="CENTER_LEFT">
-                    <Label text="Execution Logs" styleClass="card-header-title"/>
-                    <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="Clear Logs" onAction="#handleClearLogs" styleClass="btn-text"/>
-                </HBox>
-                <ListView fx:id="lstLogs" VBox.vgrow="ALWAYS" styleClass="terminal-log-view"/>
-            </VBox>
+            <!-- Workspace Tabs -->
+            <TabPane VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" styleClass="main-tab-pane">
+                <tabs>
+                    <!-- First Tab: Console Logs (Visible by Default) -->
+                    <Tab text="Console Logs">
+                        <content>
+                            <VBox spacing="8.0">
+                                <padding>
+                                    <Insets top="12" right="12" bottom="12" left="12"/>
+                                </padding>
+                                <HBox alignment="CENTER_LEFT">
+                                    <Label text="Execution Logs" styleClass="card-header-title"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Button text="Clear Logs" onAction="#handleClearLogs" styleClass="btn-text"/>
+                                </HBox>
+                                <ListView fx:id="lstLogs" VBox.vgrow="ALWAYS" styleClass="terminal-log-view"/>
+                            </VBox>
+                        </content>
+                    </Tab>
+
+                    <!-- Second Tab: Metadata Gap Analysis Dashboard -->
+                    <Tab fx:id="tabGapAnalysis" text="Metadata Gap Analysis Dashboard">
+                        <content>
+                            <VBox spacing="12.0">
+                                <padding>
+                                    <Insets top="12" right="12" bottom="12" left="12"/>
+                                </padding>
+
+                                <!-- 4 KPI Summary Cards (Exact Field Counts matching reference image layout) -->
+                                <HBox spacing="12.0">
+                                    <!-- 1. MAPPED Card -->
+                                    <VBox HBox.hgrow="ALWAYS" styleClass="card-panel" alignment="CENTER" spacing="6.0">
+                                        <Label text="MAPPED" styleClass="input-label" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="lblMappedCount" text="0" style="-fx-font-size: 26px; -fx-font-weight: 800; -fx-text-fill: #38bdf8;"/>
+                                        <Label text="Standard OME-NGFF attributes" style="-fx-font-size: 10px; -fx-text-fill: #6b7280;"/>
+                                        <ProgressBar fx:id="progressMapped" progress="0.0" maxWidth="1.7976931348623157E308"/>
+                                    </VBox>
+
+                                    <!-- 2. VENDOR DUMP Card -->
+                                    <VBox HBox.hgrow="ALWAYS" styleClass="card-panel" alignment="CENTER" spacing="6.0">
+                                        <Label text="VENDOR DUMP" styleClass="input-label" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="lblVendorDumpCount" text="0" style="-fx-font-size: 26px; -fx-font-weight: 800; -fx-text-fill: #c084fc;"/>
+                                        <Label text="Preserved vendor custom tags" style="-fx-font-size: 10px; -fx-text-fill: #6b7280;"/>
+                                        <ProgressBar fx:id="progressVendorDump" progress="0.0" maxWidth="1.7976931348623157E308"/>
+                                    </VBox>
+
+                                    <!-- 3. LOSSED Card -->
+                                    <VBox HBox.hgrow="ALWAYS" styleClass="card-panel" alignment="CENTER" spacing="6.0">
+                                        <Label text="LOSSED" styleClass="input-label" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="lblLossedCount" text="0" style="-fx-font-size: 26px; -fx-font-weight: 800; -fx-text-fill: #fca5a5;"/>
+                                        <Label text="Unconverted / missing tags" style="-fx-font-size: 10px; -fx-text-fill: #6b7280;"/>
+                                        <ProgressBar fx:id="progressLossed" progress="0.0" maxWidth="1.7976931348623157E308"/>
+                                    </VBox>
+
+                                    <!-- 4. FIELD COUNTS Card -->
+                                    <VBox HBox.hgrow="ALWAYS" styleClass="card-panel" alignment="CENTER" spacing="6.0">
+                                        <Label text="FIELD COUNTS" styleClass="input-label" style="-fx-font-weight: bold;"/>
+                                        <Label fx:id="lblTotalFieldCount" text="0" style="-fx-font-size: 26px; -fx-font-weight: 800; -fx-text-fill: #ffffff;"/>
+                                        <Label fx:id="lblFieldCountsSub" text="Original Tags" style="-fx-font-size: 10px; -fx-text-fill: #6b7280;"/>
+                                    </VBox>
+                                </HBox>
+
+                                <!-- Table Section Header (Lossed Fields Only) -->
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <Label text="Lossed Fields Inventory (LOSSED):" styleClass="card-header-title"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <TextField fx:id="txtSearchLostFields" promptText="🔍 Search lossed fields..." prefWidth="220" styleClass="input-field"/>
+                                </HBox>
+
+                                <!-- In-Dashboard Detail Table View (LOSSED Fields Only) -->
+                                <TableView fx:id="tblLostFields" VBox.vgrow="ALWAYS" styleClass="custom-table-view">
+                                    <columns>
+                                        <TableColumn fx:id="colLostStatus" text="Classification" prefWidth="130"/>
+                                        <TableColumn fx:id="colLostKey" text="Original Tag Key" prefWidth="200"/>
+                                        <TableColumn fx:id="colLostPath" text="Hierarchy Path" prefWidth="180"/>
+                                        <TableColumn fx:id="colLostValue" text="Original Value" prefWidth="140"/>
+                                        <TableColumn fx:id="colLostExplanation" text="Explanation / Reason" prefWidth="300"/>
+                                    </columns>
+                                    <placeholder>
+                                        <Label text="No lossed fields detected. All original metadata tags were successfully mapped!" styleClass="input-label"/>
+                                    </placeholder>
+                                </TableView>
+                            </VBox>
+                        </content>
+                    </Tab>
+                </tabs>
+            </TabPane>
 
         </VBox>
     </HBox>

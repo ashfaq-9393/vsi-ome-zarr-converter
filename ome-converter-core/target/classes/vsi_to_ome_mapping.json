@@ -1,0 +1,96 @@
+{
+  "__meta_note__": "Static VSI to OME-NGFF / OME-XML Metadata Mapping Dictionary for VSI OME-Zarr Converter",
+  "mappings": {
+    "OME.Image.SizeX": {
+      "raw_key": "OME.Image.SizeX",
+      "ome_target": "multiscales[0].datasets[*].shape / scale",
+      "category": "SPATIAL",
+      "status": "MAPPED",
+      "explanation": "Directly mapped to 5D Zarr array shape (dim X) and coordinate transformation scales."
+    },
+    "OME.Image.SizeY": {
+      "raw_key": "OME.Image.SizeY",
+      "ome_target": "multiscales[0].datasets[*].shape / scale",
+      "category": "SPATIAL",
+      "status": "MAPPED",
+      "explanation": "Directly mapped to 5D Zarr array shape (dim Y) and coordinate transformation scales."
+    },
+    "OME.Image.SizeZ": {
+      "raw_key": "OME.Image.SizeZ",
+      "ome_target": "multiscales[0].datasets[*].shape",
+      "category": "SPATIAL",
+      "status": "MAPPED",
+      "explanation": "Directly mapped to 5D Zarr array shape (dim Z)."
+    },
+    "OME.Image.SizeC": {
+      "raw_key": "OME.Image.SizeC",
+      "ome_target": "omero.channels length / shape",
+      "category": "CHANNEL",
+      "status": "MAPPED",
+      "explanation": "Mapped to OMERO channel metadata array length and 5D Zarr array shape (dim C)."
+    },
+    "OME.Image.SizeT": {
+      "raw_key": "OME.Image.SizeT",
+      "ome_target": "multiscales[0].datasets[*].shape",
+      "category": "TIME",
+      "status": "MAPPED",
+      "explanation": "Directly mapped to 5D Zarr array shape (dim T)."
+    },
+    "OME.Image.PhysicalSizeX": {
+      "raw_key": "OME.Image.PhysicalSizeX",
+      "ome_target": "multiscales[0].datasets[0].coordinateTransformations[scale][X]",
+      "category": "SPATIAL",
+      "status": "RENAMED",
+      "explanation": "Mapped via scientific dictionary: PhysicalSizeX ➔ multiscales coordinate scale factor (um/pixel)."
+    },
+    "OME.Image.PhysicalSizeY": {
+      "raw_key": "OME.Image.PhysicalSizeY",
+      "ome_target": "multiscales[0].datasets[0].coordinateTransformations[scale][Y]",
+      "category": "SPATIAL",
+      "status": "RENAMED",
+      "explanation": "Mapped via scientific dictionary: PhysicalSizeY ➔ multiscales coordinate scale factor (um/pixel)."
+    },
+    "OME.Image.PhysicalSizeZ": {
+      "raw_key": "OME.Image.PhysicalSizeZ",
+      "ome_target": "multiscales[0].datasets[0].coordinateTransformations[scale][Z]",
+      "category": "SPATIAL",
+      "status": "RENAMED",
+      "explanation": "Mapped via scientific dictionary: PhysicalSizeZ ➔ multiscales coordinate scale factor (um/pixel)."
+    },
+    "ChannelName": {
+      "raw_key": "ChannelName",
+      "ome_target": "omero.channels[*].label",
+      "category": "CHANNEL",
+      "status": "MAPPED",
+      "explanation": "Directly mapped to OMERO channel label attribute."
+    },
+    "ChannelColor": {
+      "raw_key": "ChannelColor",
+      "ome_target": "omero.channels[*].color",
+      "category": "CHANNEL",
+      "status": "MAPPED",
+      "explanation": "Directly mapped to OMERO channel color attribute in Hex format."
+    },
+    "VENDOR_GLOBAL": {
+      "raw_key": "Global.*",
+      "ome_target": "attributes.vendor_custom_metadata.vsi_global_tags",
+      "category": "VENDOR_GLOBAL",
+      "status": "VENDOR_METADATA",
+      "explanation": "Statically mapped and preserved verbatim in vendor_custom_metadata attribute block."
+    },
+    "VENDOR_SERIES": {
+      "raw_key": "Series.*",
+      "ome_target": "attributes.vendor_custom_metadata.vsi_series_tags",
+      "category": "VENDOR_SERIES",
+      "status": "VENDOR_METADATA",
+      "explanation": "Statically mapped and preserved verbatim in vendor_custom_metadata attribute block."
+    },
+    "OMEXMLHeader": {
+      "raw_key": "OME.Header.XML",
+      "ome_target": "OME/METADATA.ome.xml",
+      "category": "TRANSITIONAL_XML",
+      "status": "TRANSITIONAL_METADATA",
+      "explanation": "Statically mapped to companion OME-XML metadata file for full bioformats2raw fidelity."
+    }
+  }
+}

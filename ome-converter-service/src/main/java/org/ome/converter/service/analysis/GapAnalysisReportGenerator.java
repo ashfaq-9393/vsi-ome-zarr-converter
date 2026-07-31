@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class GapAnalysisReportGenerator {
     private static final Logger log = LoggerFactory.getLogger(GapAnalysisReportGenerator.class);
@@ -23,7 +22,7 @@ public class GapAnalysisReportGenerator {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(reportFile))) {
             bw.write(buildHtmlContent(result));
-            log.info("Successfully generated standalone HTML Metadata Gap Analysis Report: {}", reportPath.toAbsolutePath());
+            log.info("Successfully generated standalone static HTML Metadata Gap Analysis Report: {}", reportPath.toAbsolutePath());
         } catch (Exception e) {
             log.error("Failed to generate HTML Gap Analysis Report at {}: {}", reportPath, e.getMessage(), e);
         }
@@ -40,7 +39,7 @@ public class GapAnalysisReportGenerator {
           .append("<head>\n")
           .append("  <meta charset=\"UTF-8\">\n")
           .append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n")
-          .append("  <title>Metadata Gap Analysis Report - ").append(escape(r.datasetName())).append("</title>\n")
+          .append("  <title>Static Metadata Gap Analysis Report - ").append(escape(r.datasetName())).append("</title>\n")
           .append("  <style>\n")
           .append("    :root { --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --text-sub: #94a3b8; --border: #334155; --primary: #38bdf8; --success: #22c55e; --warning: #eab308; --danger: #ef4444; --accent: #a855f7; }\n")
           .append("    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }\n")
@@ -80,7 +79,7 @@ public class GapAnalysisReportGenerator {
           .append("  <div class=\"container\">\n")
           .append("    <div class=\"header\">\n")
           .append("      <div>\n")
-          .append("        <h1>Metadata Gap Analysis Dashboard</h1>\n")
+          .append("        <h1>Static Metadata Gap Analysis Dashboard</h1>\n")
           .append("        <p>Dataset: <strong>").append(escape(r.datasetName())).append("</strong> | Spec: <strong>").append(r.targetVersion().getDisplayName()).append("</strong> | Generated: ").append(timestamp).append("</p>\n")
           .append("      </div>\n")
           .append("      <span class=\"badge\">").append(r.targetVersion().getDisplayName()).append("</span>\n")
@@ -113,7 +112,7 @@ public class GapAnalysisReportGenerator {
           .append("      <div class=\"kpi-card\">\n")
           .append("        <div class=\"kpi-title\">Field Counts</div>\n")
           .append("        <div class=\"kpi-value\">").append(r.totalOriginalCount()).append("</div>\n")
-          .append("        <div class=\"kpi-sub\">Original: ").append(r.totalOriginalCount()).append(" | Converted: ").append(r.totalConvertedCount()).append("</div>\n")
+          .append("        <div class=\"kpi-sub\">Original: ").append(r.totalOriginalCount()).append(" | Mapped: ").append(r.totalConvertedCount()).append("</div>\n")
           .append("      </div>\n")
 
           .append("    </div>\n")
@@ -132,7 +131,7 @@ public class GapAnalysisReportGenerator {
 
           // Table Section
           .append("    <div class=\"section\">\n")
-          .append("      <div class=\"section-title\">Detailed Field Comparison Inventory</div>\n")
+          .append("      <div class=\"section-title\">Static Dictionary Field Mapping Inventory</div>\n")
           .append("      <div class=\"controls\">\n")
           .append("        <input type=\"text\" id=\"searchInput\" class=\"search-input\" placeholder=\"Search key, value, or path...\" onkeyup=\"filterTable()\">\n")
           .append("      </div>\n")
@@ -143,9 +142,9 @@ public class GapAnalysisReportGenerator {
           .append("            <th>Original Key</th>\n")
           .append("            <th>Original Hierarchy Path</th>\n")
           .append("            <th>Original Value</th>\n")
-          .append("            <th>Converted Location / Target Key</th>\n")
-          .append("            <th>Converted Value</th>\n")
-          .append("            <th>Explanation</th>\n")
+          .append("            <th>Static OME Target Location</th>\n")
+          .append("            <th>Mapped Value</th>\n")
+          .append("            <th>Static Mapping Explanation</th>\n")
           .append("          </tr>\n")
           .append("        </thead>\n")
           .append("        <tbody>\n");
@@ -178,7 +177,7 @@ public class GapAnalysisReportGenerator {
           .append("    </div>\n")
 
           .append("    <div class=\"footer\">\n")
-          .append("      <p>OME Converter Engine v1.0.0 | Standalone Gap Analysis Report</p>\n")
+          .append("      <p>OME Converter Engine v1.0.0 | Static Dictionary Gap Analysis Report</p>\n")
           .append("    </div>\n")
           .append("  </div>\n")
 

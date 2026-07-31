@@ -26,7 +26,18 @@ class MetadataGapAnalysisTest {
     }
 
     @Test
-    void testFullMetadataGapAnalysisAndHtmlReportGeneration(@TempDir Path tempDir) {
+    void testVsiStaticMappingDictionaryLookup() {
+        VsiStaticMappingDictionary.StaticMappingRule ruleSizeX = VsiStaticMappingDictionary.lookup("OME.Image.SizeX", "SPATIAL", "SPATIAL");
+        assertThat(ruleSizeX).isNotNull();
+        assertThat(ruleSizeX.classification()).isEqualTo(MetadataClassification.MAPPED);
+
+        VsiStaticMappingDictionary.StaticMappingRule ruleGlobalTag = VsiStaticMappingDictionary.lookup("Global.Exposure", "GLOBAL", "VENDOR_GLOBAL");
+        assertThat(ruleGlobalTag).isNotNull();
+        assertThat(ruleGlobalTag.classification()).isEqualTo(MetadataClassification.VENDOR_METADATA);
+    }
+
+    @Test
+    void testFullStaticMetadataGapAnalysisAndHtmlReportGeneration(@TempDir Path tempDir) {
         ImageMetadata standardMeta = new ImageMetadata(
             "sample_slide.vsi", 2048, 2048, 1, 3, 1,
             0.325, 0.325, 1.0, "micrometer", "micrometer", "micrometer",

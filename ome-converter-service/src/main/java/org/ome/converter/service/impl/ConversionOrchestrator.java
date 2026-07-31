@@ -114,8 +114,8 @@ public class ConversionOrchestrator {
                 // Run Metadata Gap Analysis Framework
                 if (result.status() == ConversionResult.Status.SUCCESS && result.outputZarrPath() != null) {
                     try {
-                        observer.onProgress(98.0, result.totalTilesConverted(), result.totalTilesConverted(), "[98.0%] Running Metadata Gap Analysis & Generating HTML Report...");
-                        observer.onLog("INFO", "Running Metadata Gap Analysis for " + request.targetVersion().getDisplayName() + "...");
+                        observer.onProgress(98.0, result.totalTilesConverted(), result.totalTilesConverted(), "[98.0%] Running Static Metadata Gap Analysis...");
+                        observer.onLog("INFO", "Running Static Metadata Gap Analysis for " + request.targetVersion().getDisplayName() + "...");
 
                         org.ome.converter.service.analysis.MetadataGapAnalyzerService analyzer = new org.ome.converter.service.analysis.MetadataGapAnalyzerService();
                         org.ome.converter.core.model.GapAnalysisResult gapResult = analyzer.analyzeAndReport(
@@ -126,8 +126,7 @@ public class ConversionOrchestrator {
                             result.outputZarrPath()
                         );
 
-                        observer.onLog("INFO", "Metadata Gap Analysis Complete! Preservation Rate: " + gapResult.preservationPercentage() + "% | Loss Rate: " + gapResult.lossPercentage() + "%");
-                        observer.onLog("INFO", "Standalone HTML Report generated at: " + gapResult.htmlReportPath().toAbsolutePath());
+                        observer.onLog("INFO", "Static Metadata Gap Analysis Complete! Results loaded into application dashboard.");
 
                         result = ConversionResult.successWithAnalysis(
                             result.jobId(),
